@@ -1,0 +1,47 @@
+{
+  "backup-0h": {
+    "schedule": "0 0 * * *",
+    "command": "bash /home/node/.openclaw/workspace/backup.sh",
+    "active": true
+  },
+  "backup-6h": {
+    "schedule": "0 6 * * *",
+    "command": "bash /home/node/.openclaw/workspace/backup.sh",
+    "active": true
+  },
+  "backup-12h": {
+    "schedule": "0 12 * * *",
+    "command": "bash /home/node/.openclaw/workspace/backup.sh",
+    "active": true
+  },
+  "backup-18h": {
+    "schedule": "0 18 * * *",
+    "command": "bash /home/node/.openclaw/workspace/backup.sh",
+    "active": true
+  },
+  "health-news": {
+    "schedule": "0 7 * * *",
+    "command": "export DISCORD_WEBHOOK_NEWS='https://discordapp.com/api/webhooks/1479916815454048306/IcYeBP9rtcmgplEDrUS_Cj-s3O0efsHcxmtX14X-9q_8tSiWJ1C7kWUM8-7BlwYR5TJA' && node /home/node/.openclaw/workspace/health-crawler/news.js",
+    "active": true
+  },
+  "seasonal-tips": {
+    "schedule": "30 7 * * *",
+    "command": "export DISCORD_WEBHOOK_SEASONAL='https://discordapp.com/api/webhooks/1479916819467997247/YIgTDd4JcH95fPfnC09Bvu8iQ5o1h8Ke1Q4dE67-SLi9bMfLQ55KtyiEi0zNv3gZCqoz' && node /home/node/.openclaw/workspace/health-crawler/seasonal.js",
+    "active": true
+  },
+  "disease-alert": {
+    "schedule": "0 8 * * *",
+    "command": "export DISCORD_WEBHOOK_DISEASE='https://discordapp.com/api/webhooks/1479916845543854150/bVIC5OsRdNudpbroYJzyIQGYQeTDIVFGPqzNnSZhJIm0eKa5JBHuRiCwTkCY9aGhl_b5' && node /home/node/.openclaw/workspace/health-crawler/disease.js",
+    "active": true
+  },
+  "us-stock-daily": {
+    "schedule": "0 0 * * *",
+    "command": "cd /home/node/.openclaw/workspace/us-stock-daily && python3 stock_crawler.py",
+    "active": true
+  },
+  "sync-memory-hourly": {
+    "schedule": "0 * * * *",
+    "command": "bash /home/node/.openclaw/workspace/cron-tool/sync_memory.sh",
+    "active": true
+  }
+}
