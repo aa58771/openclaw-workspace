@@ -51,23 +51,48 @@ function searchHealth(keyword) {
       stdio: 'pipe',
       env: { ...process.env, TAVILY_API_KEY: TAVILY_KEY }
     };
-    const proc = spawn('node', ['scripts/search.mjs', keyword, '-n', '3'], opts);
+    // 使用 --topic news --days 7 強制抓取最近7天的新聞
+    const proc = spawn('node', ['scripts/search.mjs', keyword, '-n', '5', '--topic', 'news', '--days', '7'], opts);
     let output = '';
     proc.stdout.on('data', d => output += d);
+    proc.stderr.on('data', d => output += d);
     proc.on('close', () => resolve(output));
   });
 }
 
 async function main() {
-  const topics = ['衛福部 最新', '流感 疫苗', '健康 保險'];
+  const topics = ['台灣 衛福部 2026', '台灣 流感 疫苗 2026', '台灣 健康 保險 2026'];
   let allNews = [];
   
+  console.log('🔍 開始抓取最新健康新聞...\n');
+  
   for (const topic of topics) {
+    console.log(`📌 搜尋關鍵字: ${topic}`);
     const result = await searchHealth(topic);
-    // 提取標題
-    const lines = result.split('\n').filter(l => l.trim() && !l.startsWith('##'));
-    allNews.push(...lines.slice(0, 2));
+    
+    // 解析結果，提取標題和 URL
+    const lines = result.split('\n');
+    let currentTitle = '';
+    
+    for (const line of lines) {
+      // 偵測標題 (以 "- **" 開頭)
+      if (line.startsWith('- **')) {
+        currentTitle = line.replace('- **', '').replace('**', '').trim();
+      }
+      // 偵測 URL
+      if (line.trim().startsWith('http')) {
+        const url = line.trim();
+        if (currentTitle) {
+          allNews.push({ title: currentTitle, url: url });
+          console.log(`   📰 ${currentTitle}`);
+          console.log(`      🔗 ${url}`);
+        }
+        currentTitle = '';
+      }
+    }
   }
+  
+  console.log(`\n✅ 總共抓到 ${allNews.length} 條新聞\n`);
   
   const today = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
   
@@ -75,13 +100,15 @@ async function main() {
   
   // 取前 5 條
   allNews.slice(0, 5).forEach((n, i) => {
-    const clean = n.replace(/[#*]/g, '').trim().substring(0, 100);
-    if (clean) msg += `${i+1}. ${clean}\n`;
+    msg += `${i+1}. **${n.title}**\n`;
+    msg += `   ${n.url}\n`;
   });
   
-  msg += '\n💡 資料來源：Google 新聞';
+  msg += '\n💡 資料來源：Tavily 新聞搜尋 (最近7天)';
   
+  console.log('=== Discord 訊息內容 ===');
   console.log(msg);
+  console.log('========================\n');
   
   // 發送到 Discord
   await sendDiscordWebhook(msg);
