@@ -51,3 +51,19 @@
 - **Webhook**: [已儲存 - 在 AGENT_BACKUP.md]
 
 ---
+
+---
+## 🔧 美股排程修復教訓 (2026-03-11)
+
+### 問題
+1. Python 依賴損壞 (pip 模組缺失)
+2. cron-jobs.json 寫錯路徑 (`/home/node/health-crawler/` 應為 `/home/node/.openclaw/workspace/health-crawler/`)
+3. 未使用虛擬環境 (`python3` 應為 `./venv/bin/python`)
+4. Pod 重啟後舊排程未更新
+
+### 教訓
+- ✅ Python 套件缺失 → 用 `apt-get install python3-pip` + `pip install`
+- ✅ 排程路徑 → 確認使用 `/home/node/.openclaw/workspace/`
+- ✅ Python 環境 → 使用專案內 venv (`./venv/bin/python`)
+- ✅ 每次修改 cron-jobs.json → 必須重啟 scheduler 才能生效
+
